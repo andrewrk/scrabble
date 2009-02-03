@@ -1,0 +1,21 @@
+# T - triple word
+# 3 - triple letter
+# D - double word
+# 2 - double letter
+# <space> - normal space
+# * - start location
+T  2   T   2  T
+ D   3   3   D 
+  D   2 2   D  
+2  D   2   D  2
+    D     D    
+ 3   3   3   3 
+  2   2 2   2  
+T  2   *   2  T
+  2   2 2   2  
+ 3   3   3   3 
+    D     D    
+2  D   2   D  2
+  D   2 2   D  
+ D   3   3   D 
+T  2   T   2  T
