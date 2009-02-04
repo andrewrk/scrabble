@@ -80,6 +80,6 @@ for combo in combos:
 	x += 1
 	
 wordlist = outwords.keys()
-wordlist.sort(lambda x,y: cmp(len(y),len(x)));
+wordlist.sort(lambda x,y: cmp(len(x),len(y)));
 print '\n'.join(wordlist)
 
