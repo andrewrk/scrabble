@@ -5,6 +5,7 @@ import string
 
 min_wd_size = 3
 outwords = {}
+permutations = {}
 
 def read_board(file):
 	return filter(lambda x: len(x)==0 or x[0] != '#', open(file).read().split('\n'))
@@ -36,10 +37,31 @@ def swap(word, i, j):
 	wlist[j] = tmp
 	return ''.join(wlist)
 
+def swapChar(word, index, char):
+	wlist = list(word)
+	wlist[index] = char
+	return ''.join(wlist)
+
 def get_combos(letters):
 	check_words(letters, 0)
 	check_length(letters)
 
+def get_permutations(word):
+	permutations = {}
+	return get_permutations_rec(word, 0)
+
+def get_permutations_rec(word, i):
+	while i<len(word):
+		# try it with letter[i] switched with all next letters
+		for j in range(i, len(word)):
+			test = swap(word, i, j)
+			permutations[test] = 1
+			if i < len(word) - 1:
+				get_permutations_rec(test, i+1)
+		i += 1
+	
+	return permutations.keys()
+	
 
 def wild(str, num_wild):
 	if num_wild > 0:
@@ -47,39 +69,68 @@ def wild(str, num_wild):
 	else:
 		return [str]
 
+def anagram(mask, chars):
+	# mask is of the form: e__ph_*t
+	# where lower case letters are literal, underscores can
+	# be filled in with chars from chars, and asterisks
+	# can be filled with any character a-z
+
+	# clear the output hash
+	outwords = {}
+	# get the list of wildcard possibilities
+	combos = wild('', mask.count('*'))
+	# get the list of character permutations
+	charPerms = get_permutations(chars)
+	# do anagram for each wildcard possibility
+	for combo in combos:
+		newmask = mask
+		lastAsterik = -1
+		
+		for i in range(len(combo)):
+			lastAsterik = newmask.find("*", lastAsterik+1)
+
+			if lastAsterik == -1:
+				break
+
+			newmask = swapChar(newmask, lastAsterik, combo[i])
+		
+		# fill the blanks with the permutations
+		for x in range(len(charPerms)):
+			permMask = newmask
+			lastBlank = -1
+			for i in range(len(charPerms[x])):
+				lastBlank = permMask.find("_", lastBlank+1)
+				
+				if lastBlank == -1:
+					break
+
+				permMask = swapChar(permMask, lastBlank, charPerms[x][i])
+
+			# check if permMask is a dictionary word
+			if dicwords.has_key(permMask):
+				outwords[permMask] = 1
+	
+	return outwords.keys()
+		
+		
 
 
-
-
-if len(sys.argv) <= 1:
-	print "Usage: anagram <list_of_letters> [<dictionary_file>]"
+if len(sys.argv) <= 2:
+	print "Usage: anagram <mask> <list_of_letters> [<dictionary_file>]"
 	sys.exit(1)
 
-chars = sys.argv[1].lower()
+mask = sys.argv[1].lower()
+chars = sys.argv[2].lower()
 dicfile = "dictionaries/english"
 if len(sys.argv) >= 4:
-	dicfile = sys.argv[2]
+	dicfile = sys.argv[3]
 
 # read dictionary words into hash
 dicwords = {}
 for word in open(dicfile).read().split('\n'):
 	dicwords[word] = 1
 
-# get a list of possible words to use. combine tray letters one at a time
-# with every letter in the alphabet
-num_wild = chars.count('*')
-chars = chars.replace('*','')
-
-print "generating possible words..."
-x = 0
-combos = wild(chars, num_wild)
-max = len(combos)
-for combo in combos:
-	print "%i / %i done" % (x, max)
-	get_combos(combo)
-	x += 1
-	
-wordlist = outwords.keys()
-wordlist.sort(lambda x,y: cmp(len(x),len(y)));
+wordlist = anagram(mask, chars)
+wordlist.sort(lambda x,y: cmp(len(x),len(y)))
 print '\n'.join(wordlist)
 

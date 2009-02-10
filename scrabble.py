@@ -68,28 +68,46 @@ for word in open(dicfile).read().split('\n'):
 
 # get a list of possible words to use. combine tray letters one at a time
 # with every letter in the alphabet
-num_wild = chars.count('*')+1
-chars = chars.replace('*','')
+#num_wild = chars.count('*')+1
+#chars = chars.replace('*','')
 
-print "generating possible words..."
-x = 0
-combos = wild(chars, num_wild)
-max = len(combos)
-for combo in combos:
-	print "%i / %i done" % (x, max)
-	get_combos(combo)
-	x += 1
+#print "generating possible words..."
+#x = 0
+#combos = wild(chars, num_wild)
+#max = len(combos)
+#for combo in combos:
+#	print "%i / %i done" % (x, max)
+#	get_combos(combo)
+#	x += 1
 	
-open("lastwordlist","w").write('\n'.join(outwords.keys()))
 
-# now we have a list of words we can play. go through each open square
+# go through each open square
 # on the scrabble board and try to play every word. keep track of how 
 # many points each move is worth (if it is valid)
+pts = {}
 for y in range(len(board)):
 	for x in range(len(board[0])):
 		# lay the word across
-		if board[y][x] == ' ':
-		
+		pts[get_word_points(x, y, 1, 0)] = (x, y, 1, 0,)
 		# lay the word down
-			
+		pts[get_word_points(x, y, 0, 1)] = (x, y, 0, 1,)
 
+def anagram(mask, chars):
+	# mask is of the form: e__ph_*t
+	# where lower case letters are literal, underscores can
+	# be filled in with chars from chars, and asterisks
+	# can be filled with any character a-z
+def get_word_points(x, y, xdir, ydir):
+	xi = x
+	yi = y
+	charsLeft = len(chars)
+	charString = ''
+	while charsLeft > 0:
+		if is_letter(x,y):
+			charString += board[yi][xi]
+		x += xdir
+		y += ydir
+		
+
+def is_letter(x, y):
+	return board[y][x] >= 'a' and board[y][x] <= 'z':
