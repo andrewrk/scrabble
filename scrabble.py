@@ -7,14 +7,20 @@ from dictionary import Dictionary
 
 class ScrabbleBoard:
 	def __init__(self, board_file = "boards/blank"):
-		read_board(file)
+		self.board = []
+		self.pieces = {}
+		self.read_board(file)
 
 	def write_board(self, file):
 		open(file).write('\n'.join(map(lambda x: ''.join(x), board)))
 	
 	def read_board(self, file):
-		self.board = filter(lambda x: len(x)==0 or x[0] != '#', open(file).read().split('\n'))
-	
+		lines = filter(lambda x: len(x) != 0 and x[0] != '#', open(file).read().split('\n'))
+		self.board = filter(lambda x: x.find(':') == -1, lines)
+		self.pieces = dict([map(lambda y: y.strip(), x.split(':')) for x in filter(lambda x: x.find(':') != -1, lines)])
+		for key in self.pieces.keys():
+			self.pieces[key] = self.pieces[key].split('x')
+
 	def get_square(self, x, y):
 		return self.board[y][x]
 	
@@ -36,7 +42,7 @@ def get_word_points(x, y, xdir, ydir):
 		
 
 def is_letter(x, y):
-	return board[y][x] >= 'a' and board[y][x] <= 'z':
+	return board[y][x] >= 'a' and board[y][x] <= 'z'
 
 if __name__=='__main__':
 	if len(sys.argv) <= 2:
@@ -50,9 +56,9 @@ if __name__=='__main__':
 		dicfile = sys.argv[3]
 	
 
-# go through each open square
-# on the scrabble board and try to play every word. keep track of how 
-# many points each move is worth (if it is valid)
+	# go through each open square
+	# on the scrabble board and try to play every word. keep track of how 
+	# many points each move is worth (if it is valid)
 	pts = {}
 	for y in range(len(board)):
 		for x in range(len(board[0])):

@@ -4,6 +4,33 @@
 # 2 - double letter
 # <space> - normal space
 # * - start location
+a: 9x1
+b: 2x3
+c: 2x3
+d: 4x2
+e: 12x1
+f: 2x4
+g: 3x2
+h: 2x4
+i: 9x1
+j: 1x8
+k: 1x5
+l: 4x1
+m: 2x3
+n: 6x1
+o: 8x1
+p: 2x3
+q: 1x10
+r: 6x1
+s: 4x1
+t: 6x1
+u: 4x1
+v: 2x4
+w: 2x4
+x: 1x8
+y: 2x4
+z: 1x10
+*: 2x0
 T  2   T   2  T
  D   3   3   D 
   D   2 2   D  
