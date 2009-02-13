@@ -44,6 +44,16 @@ def get_word_points(x, y, xdir, ydir):
 def is_letter(x, y):
 	return board[y][x] >= 'a' and board[y][x] <= 'z'
 
+def valid_move(old_board, new_board):
+	return move_points(old_board, new_board) == -1
+
+def move_points(board, word, x, y, direction):
+	# how many points are earned for moving here?
+	# -1 means it is not a valid move
+	
+	return -1
+
+
 if __name__=='__main__':
 	if len(sys.argv) <= 2:
 		print "Usage: scrabble <board_file> <list_of_letters> [<dictionary_file>]"

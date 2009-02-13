@@ -28,7 +28,8 @@ class AnagramSolver:
 
 	def get_permutations(self, word):
 		self.permutations = {}
-		self.get_permutations_rec(word, 0)
+		for item in self.wild(word.replace('*',''), word.count('*')):
+			self.get_permutations_rec(item, 0)
 		return self.permutations.keys()
 
 	def get_permutations_rec(self, word, i):
@@ -40,55 +41,39 @@ class AnagramSolver:
 				if i < len(word) - 1:
 					self.get_permutations_rec(test, i+1)
 			i += 1
-		
-		
 
 	def wild(self, str, num_wild):
 		if num_wild > 0:
-			return [y + x for x in string.lowercase for y in wild(str, num_wild-1)]
+			return [y + x for x in string.lowercase for y in self.wild(str, num_wild-1)]
 		else:
 			return [str]
 
 	def anagram(self, mask, chars):
-		# mask is of the form: e__ph_*t
+		# mask is of the form: e__ph_nt and characters can be a-z or *
 		# where lower case letters are literal, underscores can
 		# be filled in with chars from chars, and asterisks
 		# can be filled with any character a-z
 		
 		# clear the output hash
 		self.outwords = {}
-		# get the list of wildcard possibilities
-		combos = self.wild('', mask.count('*'))
 		# get the list of character permutations
 		charPerms = self.get_permutations(chars)
-		# do anagram for each wildcard possibility
-		for combo in combos:
-			newmask = mask
-			lastAsterik = -1
-			
-			for i in range(len(combo)):
-				lastAsterik = newmask.find("*", lastAsterik+1)
-
-				if lastAsterik == -1:
+		
+		# fill the blanks with the permutations
+		for x in range(len(charPerms)):
+			permMask = mask
+			lastBlank = -1
+			for i in range(len(charPerms[x])):
+				lastBlank = permMask.find("_", lastBlank+1)
+				
+				if lastBlank == -1:
 					break
 
-				newmask = self.swapChar(newmask, lastAsterik, combo[i])
-			
-			# fill the blanks with the permutations
-			for x in range(len(charPerms)):
-				permMask = newmask
-				lastBlank = -1
-				for i in range(len(charPerms[x])):
-					lastBlank = permMask.find("_", lastBlank+1)
-					
-					if lastBlank == -1:
-						break
+				permMask = self.swapChar(permMask, lastBlank, charPerms[x][i])
 
-					permMask = self.swapChar(permMask, lastBlank, charPerms[x][i])
-
-				# check if permMask is a dictionary word
-				if self.dictionary.is_word(permMask):
-					self.outwords[permMask] = 1
+			# check if permMask is a dictionary word
+			if self.dictionary.is_word(permMask):
+				self.outwords[permMask] = 1
 		
 		return self.outwords.keys()
 			
