@@ -28,6 +28,18 @@ class ScrabbleBoard:
 		wlist = list(self.board[y])
 		wlist[x] = char
 		self.board[y] = ''.join(wlist)
+	
+	def piece_score(self, char):
+		return self.pieces[char][1]
+	
+	def piece_count(self, char):
+		return self.pieces[char][0]
+	
+	def width(self):
+		return len(self.board[0])
+	
+	def height(self):
+		return len(self.board)
 
 def get_word_points(x, y, xdir, ydir):
 	xi = x
@@ -47,11 +59,35 @@ def is_letter(x, y):
 def valid_move(old_board, new_board):
 	return move_points(old_board, new_board) == -1
 
-def move_points(board, word, x, y, direction):
+def move_points(board, word, x, y, dir_x, dir_y, is_root = True):
 	# how many points are earned for moving here?
 	# -1 means it is not a valid move
+	bx = x
+	by = y
 	
-	return -1
+	# TODO: this doesn't take into account multiple
+	# word connections at once yet.
+	word_multiplier = 1
+	word_score = 0
+	for i in range(len(word)):
+		letter_score = board.piece_score(word[i])
+		if board.get_square(bx, by) == '2':
+			letter_score *= 2
+		else if board.get_square(bx, by) == '3':
+			letter_score *= 3
+		else if board.get_square(bx, by) == 'D':
+			word_multiplier *= 2
+		else if board.get_square(bx, by) == 'T':
+			word_multiplier *= 3
+		word_score += letter_score
+
+		bx += dir_x
+		by += dir_y
+	
+	word_score *= word_multiplier
+	# TODO don't forget to add the offshoots to word score later
+	
+	return word_score 
 
 
 if __name__=='__main__':
@@ -69,11 +105,19 @@ if __name__=='__main__':
 	# go through each open square
 	# on the scrabble board and try to play every word. keep track of how 
 	# many points each move is worth (if it is valid)
+	ags = AnagramSolver(dicfile)
 	pts = {}
-	for y in range(len(board)):
-		for x in range(len(board[0])):
-			# lay the word across
-			pts[get_word_points(x, y, 1, 0)] = (x, y, 1, 0,)
-			# lay the word down
-			pts[get_word_points(x, y, 0, 1)] = (x, y, 0, 1,)
+	for y in range(board.height()):
+		for x in range(board.width()):
+			# come up with words to play here
+			for each choice in ags.anagram('_______', chars):
+				# lay the word across
+				pts[move_points(board, choice, x, y, 1, 0)] = (choice, x, y, 1, 0,)
+				# lay the word down
+				pts[move_points(board, choice, x, y, 0, 1)] = (choice, x, y, 0, 1,)
 
+	# sort the keys of pts to discover the highest scoring option
+	moves = pts.keys()
+	moves.sort(reverse=True)
+
+	print pts[moves[0]][0]
