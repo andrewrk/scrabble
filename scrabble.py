@@ -9,13 +9,13 @@ class ScrabbleBoard:
 	def __init__(self, board_file = "boards/blank"):
 		self.board = []
 		self.pieces = {}
-		self.read_board(file)
+		self.read_board(board_file)
 
-	def write_board(self, file):
-		open(file).write('\n'.join(map(lambda x: ''.join(x), board)))
+	def write_board(self, board_file):
+		open(board_file).write('\n'.join(map(lambda x: ''.join(x), board)))
 	
-	def read_board(self, file):
-		lines = filter(lambda x: len(x) != 0 and x[0] != '#', open(file).read().split('\n'))
+	def read_board(self, board_file):
+		lines = filter(lambda x: len(x) != 0 and x[0] != '#', open(board_file).read().split('\n'))
 		self.board = filter(lambda x: x.find(':') == -1, lines)
 		self.pieces = dict([map(lambda y: y.strip(), x.split(':')) for x in filter(lambda x: x.find(':') != -1, lines)])
 		for key in self.pieces.keys():
@@ -73,11 +73,11 @@ def move_points(board, word, x, y, dir_x, dir_y, is_root = True):
 		letter_score = board.piece_score(word[i])
 		if board.get_square(bx, by) == '2':
 			letter_score *= 2
-		else if board.get_square(bx, by) == '3':
+		elif board.get_square(bx, by) == '3':
 			letter_score *= 3
-		else if board.get_square(bx, by) == 'D':
+		elif board.get_square(bx, by) == 'D':
 			word_multiplier *= 2
-		else if board.get_square(bx, by) == 'T':
+		elif board.get_square(bx, by) == 'T':
 			word_multiplier *= 3
 		word_score += letter_score
 
@@ -110,7 +110,7 @@ if __name__=='__main__':
 	for y in range(board.height()):
 		for x in range(board.width()):
 			# come up with words to play here
-			for each choice in ags.anagram('_______', chars):
+			for choice in ags.anagram('_______', chars):
 				# lay the word across
 				pts[move_points(board, choice, x, y, 1, 0)] = (choice, x, y, 1, 0,)
 				# lay the word down

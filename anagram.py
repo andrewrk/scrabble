@@ -5,10 +5,10 @@ import string
 from dictionary import Dictionary
 
 class AnagramSolver:
-	def __init__(self, dictionary = Dictionary()):
+	def __init__(self, dic_file = 'dictionaries/english'):
 		self.outwords = {}
 		self.permutations = {}
-		self.dictionary = dictionary
+		self.dictionary = Dictionary(dic_file)
 
 	def swap(self, word, i, j):
 		wlist = list(word)

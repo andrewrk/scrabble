@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 
 class Dictionary:
-	def __init__(self, file='dictionaries/english'):
+	def __init__(self, dic_file='dictionaries/english'):
 		self.words = {}
-		for word in open(file).read().split('\n'):
+		for word in open(dic_file).read().split('\n'):
 			self.words[word] = True
 	
 	def is_word(self, word):
