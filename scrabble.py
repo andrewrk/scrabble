@@ -30,10 +30,10 @@ class ScrabbleBoard:
 		self.board[y] = ''.join(wlist)
 	
 	def piece_score(self, char):
-		return self.pieces[char][1]
+		return int(self.pieces[char][1])
 	
 	def piece_count(self, char):
-		return self.pieces[char][0]
+		return int(self.pieces[char][0])
 	
 	def width(self):
 		return len(self.board[0])
@@ -83,6 +83,9 @@ def move_points(board, word, x, y, dir_x, dir_y, is_root = True):
 
 		bx += dir_x
 		by += dir_y
+
+		if bx >= board.width() or by >= board.height():
+			return -1 #invalid move - off the board
 	
 	word_score *= word_multiplier
 	# TODO don't forget to add the offshoots to word score later
@@ -109,15 +112,54 @@ if __name__=='__main__':
 	pts = {}
 	for y in range(board.height()):
 		for x in range(board.width()):
+			print "Looking at (%i, %i)..." % (x, y)
+			print "----------------------"
 			# come up with words to play here
-			for choice in ags.anagram('_______', chars):
-				# lay the word across
-				pts[move_points(board, choice, x, y, 1, 0)] = (choice, x, y, 1, 0,)
-				# lay the word down
-				pts[move_points(board, choice, x, y, 0, 1)] = (choice, x, y, 0, 1,)
+			# lay the word across and down
+			for m in range(2):
+				xdir = 1-m
+				ydir = m
+				overlay = '_______'
+				xi = x
+				yi = y
+				overlay_pos = -1 # first position when we cross a letter
 
+				for i in range(len(overlay)):
+					if string.lowercase.find(board.get_square(xi,yi)) != -1:
+						# there is a letter here; add it to overlay
+						tmp = list(overlay)
+						tmp[i] = board.get_square(xi, yi)
+						overlay = ''.join(tmp)
+						if overlay_pos == -1:
+							overlay_pos = i
+					xi += xdir
+					yi += ydir
+
+					if xi >= board.width() or yi >= board.height():
+						break
+				
+				if xi < board.width() and yi < board.height():
+					if string.lowercase.find(board.get_square(xi,yi)) != -1:
+						# there is a letter here; add it to overlay
+						tmp = list(overlay)
+						tmp[i] = board.get_square(xi, yi)
+						overlay = ''.join(tmp)
+						if overlay_pos == -1:
+							overlay_pos = len(overlay)
+				
+				for i in range(len(overlay)-1):
+					# remove i characters from overlay
+					overlay = overlay[:-1]
+					
+					if overlay_pos != -1 and overlay_pos <= len(overlay):
+						for choice in ags.anagram(overlay, chars):
+							# lay the word 
+							print "Testing word: %s" % choice
+							pts[move_points(board, choice, x, y, xdir, ydir)] = (choice, x, y, xdir, ydir,)
+	
 	# sort the keys of pts to discover the highest scoring option
 	moves = pts.keys()
 	moves.sort(reverse=True)
-
-	print pts[moves[0]][0]
+	
+	directions = {'01': 'down', '10': 'across'}
+	print "Best move: '%s' at position (%i, %i) %s which scores %i points." % (pts[moves[0]][0], pts[moves[0]][1], pts[moves[0]][2], directions[str(pts[moves[0]][3])+str(pts[moves[0]][4])], moves[0])
