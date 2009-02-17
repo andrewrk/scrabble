@@ -162,4 +162,7 @@ if __name__=='__main__':
 	moves.sort(reverse=True)
 	
 	directions = {'01': 'down', '10': 'across'}
-	print "Best move: '%s' at position (%i, %i) %s which scores %i points." % (pts[moves[0]][0], pts[moves[0]][1], pts[moves[0]][2], directions[str(pts[moves[0]][3])+str(pts[moves[0]][4])], moves[0])
+	print "Top 5 moves:"
+	for i in range(5):
+		if len(moves) > i:
+			print "'%s' at position (%i, %i) %s which scores %i points." % (pts[moves[i]][0], pts[moves[i]][1], pts[moves[i]][2], directions[str(pts[moves[i]][3])+str(pts[moves[i]][4])], moves[i])
