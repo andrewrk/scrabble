@@ -59,7 +59,7 @@ def is_letter(x, y):
 def valid_move(old_board, new_board):
 	return move_points(old_board, new_board) == -1
 
-def move_points(board, word, x, y, dir_x, dir_y, is_root = True):
+def move_points(board, word, x, y, dir_x, dir_y, chars):
 	# how many points are earned for moving here?
 	# -1 means it is not a valid move
 	bx = x
@@ -70,6 +70,10 @@ def move_points(board, word, x, y, dir_x, dir_y, is_root = True):
 	word_multiplier = 1
 	word_score = 0
 	for i in range(len(word)):
+		if chars.find(word[i]) != -1:
+			tmp = list(chars)
+			tmp.remove(word[i])
+			chars = ''.join(tmp)
 		letter_score = board.piece_score(word[i])
 		if board.get_square(bx, by) == '2':
 			letter_score *= 2
@@ -88,6 +92,11 @@ def move_points(board, word, x, y, dir_x, dir_y, is_root = True):
 			return -1 #invalid move - off the board
 	
 	word_score *= word_multiplier
+
+	# 50 points for using all 7 chars
+	if len(chars) == 0:
+		word_score += 50
+
 	# TODO don't forget to add the offshoots to word score later
 	
 	return word_score 
@@ -155,7 +164,7 @@ if __name__=='__main__':
 						for choice in ags.anagram(overlay, chars):
 							# lay the word 
 							print "Testing word: %s" % choice
-							pts[move_points(board, choice, x, y, xdir, ydir)] = (choice, x, y, xdir, ydir,)
+							pts[move_points(board, choice, x, y, xdir, ydir, chars)] = (choice, x, y, xdir, ydir,)
 	
 	# sort the keys of pts to discover the highest scoring option
 	moves = pts.keys()
