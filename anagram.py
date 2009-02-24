@@ -87,9 +87,8 @@ if __name__ == '__main__':
 	dicfile = "dictionaries/english"
 	if len(sys.argv) >= 4:
 		dicfile = sys.argv[3]
-	dictionary = Dictionary(dicfile)
 
-	ags = AnagramSolver(dictionary)
+	ags = AnagramSolver(dicfile)
 
 	wordlist = ags.anagram(mask, chars)
 	wordlist.sort(lambda x,y: cmp(len(x),len(y)))
